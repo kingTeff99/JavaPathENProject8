@@ -1,0 +1,81 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'application'
+    id 'gradle.site' version '0.6'
+    id 'jacoco'
+}
+
+application {
+	mainClass = 'com.tourguide.microservice.rewards.MicroserviceRewardsApplication'
+}
+
+group = 'com.tourguide.microservice'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+	flatDir {
+        dirs '../libs'
+    }
+}
+
+ext {
+	set('springCloudVersion', "2021.0.0")
+	set('testcontainersVersion', "1.16.2")
+}
+
+dependencies {
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:3.0.3'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.7'
+    implementation(name:'gpsUtil', ext:'jar')
+    implementation(name:'RewardCentral', ext:'jar')
+    implementation project (':library')
+    implementation project (':feign_clients')
+    implementation 'junit:junit:4.13.1'
+    implementation 'org.apache.maven.plugins:maven-surefire-report-plugin:3.0.0-M5'
+    implementation 'org.apache.maven.plugins:maven-site-plugin:3.9.1'
+    
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
+	
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+    finalizedBy generateSiteHtml
+    finalizedBy javadoc
+}
+
+site {
+    outputDir.set(file("$rootDir/microservice-rewards/build/reports/gradle-site"))
+    //websiteUrl.set("https://github.com/kingTeff99/JavaPathENProject8")
+    //vcsUrl.set("https://github.com/kingTeff99/JavaPathENProject8")
+}
+
+javadoc {
+    dependsOn test
+    destinationDir = file("$rootDir/build/reports/javadoc")
+}
+
+generateSiteHtml {
+    dependsOn test
+}
+
+
+jacocoTestReport {
+    dependsOn test
+}

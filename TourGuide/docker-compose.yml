@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  microservice_rewards:
+    build: ./microservice-rewards
+    ports:
+      - "8383:8383"
+    container_name: "tourguideMicroserviceRewards"
+
+  microservice_tourguide:
+    build: ./microservice-tourguide
+    ports:
+      - "8181:8181"
+    container_name: "tourguideMicroserviceTourguide"
+
+  microservice_users:
+    build: ./microservice-users
+    ports:
+      - "8282:8282"
+    container_name: "tourguideMicroserviceUsers"

@@ -1,0 +1,62 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'application'
+    id 'gradle.site' version '0.6'
+    id 'jacoco'
+}
+
+group = 'com.tourguide.microservice'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+	mavenCentral()
+	flatDir {
+        dirs '../libs'
+    }
+}
+
+application{
+    mainClass = 'com.tourguide.microservice.users.MicroserviceUsersApplication'
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation project(':library')
+    implementation(name:'gpsUtil', ext:'jar')
+    implementation(name:'TripPricer', ext:'jar')
+    implementation 'org.apache.maven.plugins:maven-surefire-report-plugin:3.0.0-M5'
+    implementation 'org.apache.maven.plugins:maven-site-plugin:3.9.1'
+
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+test {
+	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+    finalizedBy generateSiteHtml
+    finalizedBy javadoc
+}
+
+site {
+    outputDir.set(file("$rootDir/build/reports/gradle-site"))
+    //websiteUrl.set("https://github.com/kingTeff99/JavaPathENProject8")
+    //vcsUrl.set("https://github.com/kingTeff99/JavaPathENProject8")
+}
+
+javadoc {
+    dependsOn test
+    destinationDir = file("$rootDir/build/reports/javadoc")
+}
+
+generateSiteHtml {
+    dependsOn test
+}
+
+
+jacocoTestReport {
+    dependsOn test
+}
